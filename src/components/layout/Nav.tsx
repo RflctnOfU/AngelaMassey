@@ -1,5 +1,5 @@
 "use client";
-import { motion } from "framer-motion";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
 import Burger1 from "../ui/Burger1";
@@ -44,37 +44,55 @@ const links = [
 ];
 
 export default function Nav() {
-  const [isActive, setIsActive] = useState("Home");
+  const pathname = usePathname();
   const [isMobile, setIsMobile] = useState(false);
+  // const [scrolled, setScrolled] = useState(false);
   const menuChange = () => {
     setIsMobile((prev) => !prev);
-    console.log(isMobile);
   };
+  // if (typeof window !== "undefined") {
+  //   const handleScroll = () => {
+  //     if (window.scrollY >= 64) {
+  //       setScrolled(true);
+  //     } else setScrolled(false);
+  //   };
+  //   window.addEventListener("scroll", handleScroll);
+  // }
   return (
     <>
-      <div className="flex justify-between items-center bg-[url(/images/test/4.png)] bg-cover bg-center bg-no-repeat z-50 fixed w-full h-16">
+      <div
+        className={` bg-[url(/images/test/4.png)] bg-cover bg-center bg-no-repeat duration-300 transition-all ease-in-out flex justify-between items-center z-50 fixed w-full h-16 text-white`}
+      >
         <div className="px-4">Logo Here</div>
         <nav className="flex max-md:justify-end md:justify-between items-center ">
-          <div className="max-md:hidden w-auto md:gap-2 lg:gap-4">
+          <div className="flex max-md:hidden w-auto md:gap-2 lg:gap-4">
             {links.map((link) => {
               return (
-                <Link
-                  href={link.path}
+                <div
                   key={link.name}
-                  className="lg:px-2 md:px-1"
+                  className={`py-5 ${
+                    pathname === link.path
+                      ? " bg-slate-300 bg-opacity-20"
+                      : "text-neutral-200"
+                  }`}
                 >
-                  {link.name.toUpperCase()}
-                </Link>
+                  <Link href={link.path} className="lg:px-2 md:px-1">
+                    {link.name.toUpperCase()}
+                  </Link>
+                </div>
               );
             })}
           </div>
           <button className="max-md:block md:hidden">
-            <Burger1 mobile={menuChange} />
+            <Burger1
+              mobile={isMobile}
+              open={() => setIsMobile((prev) => !prev)}
+            />
           </button>
         </nav>
       </div>
       <div
-        className={`z-[5] flex flex-col gap-4 h-screen items-center bg-[url(/images/test/3.png)] bg-cover bg-center bg-no-repeat  bg-opacity-[95] w-full duration-700 fixed bottom-0 ease-in-out py-4  ${
+        className={`z-[5] flex flex-col gap-4 h-screen items-center bg-[url(/images/test/4.png)] bg-cover bg-center bg-no-repeat  bg-opacity-[95] w-full duration-700 fixed bottom-0 ease-in-out py-4  ${
           isMobile
             ? "top-[64px] opacity-100 bg-opacity-100"
             : "-top-[100vh] opacity-0 bg-opacity-0"
@@ -84,11 +102,12 @@ export default function Nav() {
           return (
             <div
               className={`w-full flex justify-center ${
-                isActive === link.name
+                pathname === link.path
                   ? " bg-slate-300 bg-opacity-20"
                   : "text-neutral-200"
               } p-1`}
               key={link.name}
+              onClick={menuChange}
             >
               <Link href={link.path}>{link.name.toUpperCase()}</Link>
             </div>
